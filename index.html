@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynalist Periodic Table Generator</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom Scrollbar for list preview */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1e293b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #64748b;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased selection:bg-brand-500 selection:text-white pb-12">
+
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-30">
+    <div class="max-w-6xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center font-bold text-lg text-white shadow-lg shadow-brand-500/20">
+          🧪
+        </div>
+        <div>
+          <h1 class="text-xl font-bold bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+            Dynalist Element Exporter
+          </h1>
+          <p class="text-xs text-slate-400">All 118 elements ready to paste into Dynalist</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="copyTopBtn" onclick="copyList()" class="bg-brand-600 hover:bg-brand-500 text-white font-medium px-5 py-2.5 rounded-xl shadow-lg shadow-brand-600/30 transition-all flex items-center gap-2 active:scale-95">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+          </svg>
+          <span id="copyTopBtnText">Copy List to Clipboard</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
+
+    <!-- Instructions Banner -->
+    <section class="bg-gradient-to-r from-indigo-950/60 via-slate-900 to-slate-900 border border-indigo-500/20 rounded-2xl p-6 shadow-xl relative overflow-hidden">
+      <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      
+      <div class="flex flex-col md:flex-row md:items-start gap-6">
+        <div class="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl shrink-0 text-brand-500 self-start">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        
+        <div class="space-y-3 flex-1">
+          <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+            How to paste into Dynalist
+          </h2>
+          <ol class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm text-slate-300 pt-1">
+            <li class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800 flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-brand-600/30 border border-brand-500/40 text-brand-300 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">1</span>
+              <span>Click <strong class="text-white">"Copy List"</strong> below to copy all 118 elements.</span>
+            </li>
+            <li class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800 flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-brand-600/30 border border-brand-500/40 text-brand-300 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</span>
+              <span>Open your document in <strong class="text-white">Dynalist</strong> & click on an empty bullet item.</span>
+            </li>
+            <li class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800 flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-brand-600/30 border border-brand-500/40 text-brand-300 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">3</span>
+              <span>Press <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-xs text-slate-200">Ctrl+V</kbd> (or <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-xs text-slate-200">Cmd+V</kbd>). Dynalist auto-creates a new bullet point for each line!</span>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Workspace Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+      <!-- Left Column: Settings & Controls -->
+      <div class="lg:col-span-5 space-y-6">
+        
+        <!-- Format Settings Card -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-5 shadow-lg">
+          <h3 class="text-base font-semibold text-white flex items-center justify-between">
+            <span>List Formatting Options</span>
+            <span class="text-xs font-normal text-slate-400 bg-slate-800 px-2.5 py-1 rounded-full" id="elementCountBadge">118 elements</span>
+          </h3>
+
+          <!-- Format Selector -->
+          <div class="space-y-2">
+            <label class="text-xs font-medium text-slate-400 uppercase tracking-wider">Format Style</label>
+            <div class="space-y-2">
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700 cursor-pointer transition-all">
+                <input type="radio" name="formatPreset" value="1" checked onchange="updateFormat()" class="w-4 h-4 text-brand-600 bg-slate-900 border-slate-700 focus:ring-brand-500 focus:ring-offset-slate-900">
+                <div class="text-sm">
+                  <div class="font-medium text-slate-200">Number. Name (Symbol)</div>
+                  <div class="text-xs text-slate-500 font-mono mt-0.5">1. Hydrogen (H)</div>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700 cursor-pointer transition-all">
+                <input type="radio" name="formatPreset" value="2" onchange="updateFormat()" class="w-4 h-4 text-brand-600 bg-slate-900 border-slate-700 focus:ring-brand-500 focus:ring-offset-slate-900">
+                <div class="text-sm">
+                  <div class="font-medium text-slate-200">Number - Symbol - Name</div>
+                  <div class="text-xs text-slate-500 font-mono mt-0.5">1 - H - Hydrogen</div>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700 cursor-pointer transition-all">
+                <input type="radio" name="formatPreset" value="3" onchange="updateFormat()" class="w-4 h-4 text-brand-600 bg-slate-900 border-slate-700 focus:ring-brand-500 focus:ring-offset-slate-900">
+                <div class="text-sm">
+                  <div class="font-medium text-slate-200">Markdown Bold Symbol & Name</div>
+                  <div class="text-xs text-slate-500 font-mono mt-0.5">**H** - Hydrogen (Atomic #1)</div>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700 cursor-pointer transition-all">
+                <input type="radio" name="formatPreset" value="4" onchange="updateFormat()" class="w-4 h-4 text-brand-600 bg-slate-900 border-slate-700 focus:ring-brand-500 focus:ring-offset-slate-900">
+                <div class="text-sm">
+                  <div class="font-medium text-slate-200">Symbol (Number) - Name</div>
+                  <div class="text-xs text-slate-500 font-mono mt-0.5">H (#1) - Hydrogen</div>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700 cursor-pointer transition-all">
+                <input type="radio" name="formatPreset" value="custom" onchange="updateFormat()" class="w-4 h-4 text-brand-600 bg-slate-900 border-slate-700 focus:ring-brand-500 focus:ring-offset-slate-900">
+                <div class="text-sm w-full">
+                  <div class="font-medium text-slate-200">Custom Format Template</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Custom Format Input -->
+          <div id="customFormatContainer" class="hidden space-y-2 pt-1 border-t border-slate-800">
+            <label class="text-xs font-medium text-slate-400">Custom Pattern</label>
+            <input type="text" id="customPattern" value="{num}. {name} ({sym})" oninput="generateList()" placeholder="{num}. {name} ({sym})" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-sm font-mono text-slate-200 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500">
+            <p class="text-xs text-slate-500">Available placeholders: <code class="text-brand-400">{num}</code>, <code class="text-brand-400">{sym}</code>, <code class="text-brand-400">{name}</code>, <code class="text-brand-400">{category}</code></p>
+          </div>
+
+          <!-- Filters -->
+          <div class="space-y-3 pt-2 border-t border-slate-800">
+            <label class="text-xs font-medium text-slate-400 uppercase tracking-wider">Search & Filter</label>
+            
+            <div class="relative">
+              <svg class="w-4 h-4 absolute left-3.5 top-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+              <input type="text" id="searchInput" oninput="generateList()" placeholder="Search by name, symbol, or number..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500">
+            </div>
+
+            <div class="flex gap-2">
+              <select id="categoryFilter" onchange="generateList()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-brand-500">
+                <option value="all">All Categories</option>
+                <option value="reactive-nonmetal">Reactive Nonmetals</option>
+                <option value="noble-gas">Noble Gases</option>
+                <option value="alkali-metal">Alkali Metals</option>
+                <option value="alkaline-earth-metal">Alkaline Earth Metals</option>
+                <option value="metalloid">Metalloids</option>
+                <option value="post-transition-metal">Post-Transition Metals</option>
+                <option value="transition-metal">Transition Metals</option>
+                <option value="lanthanide">Lanthanides</option>
+                <option value="actinide">Actinides</option>
+                <option value="unknown">Unknown Properties</option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Right Column: Live Output & Action Area -->
+      <div class="lg:col-span-7 space-y-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-lg flex flex-col h-[620px]">
+          
+          <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
+            <div>
+              <h3 class="font-semibold text-white">Copy-Ready Plain Text Preview</h3>
+              <p class="text-xs text-slate-400">Each line will automatically become a distinct Dynalist bullet point</p>
+            </div>
+            
+            <button onclick="copyList()" class="bg-brand-600 hover:bg-brand-500 text-white font-medium px-4 py-2 rounded-xl text-sm transition-all flex items-center gap-2 active:scale-95 shadow-md shadow-brand-600/20">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+              </svg>
+              <span id="copyBtnText">Copy to Clipboard</span>
+            </button>
+          </div>
+
+          <!-- Scrollable Plaintext Preview / Textarea -->
+          <div class="relative flex-1 bg-slate-950 border border-slate-800/80 rounded-xl overflow-hidden flex flex-col">
+            <textarea id="listOutput" readonly class="w-full h-full p-4 font-mono text-xs sm:text-sm text-slate-200 bg-transparent resize-none focus:outline-none leading-relaxed select-all" spellcheck="false"></textarea>
+          </div>
+
+          <div class="pt-4 flex items-center justify-between text-xs text-slate-500">
+            <span id="showingCount">Showing 118 of 118 elements</span>
+            <span>Click text area or button to select all</span>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-6 right-6 bg-emerald-600 text-white px-5 py-3 rounded-2xl shadow-2xl border border-emerald-400/30 flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none z-50">
+    <div class="bg-white/20 p-1 rounded-full">
+      <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+      </svg>
+    </div>
+    <span class="font-medium text-sm">Copied to clipboard! Ready to paste into Dynalist.</span>
+  </div>
+
+  <!-- JavaScript Application Logic -->
+  <script>
+    // Complete Periodic Table Dataset (1-118)
+    const elements = [
+      { num: 1, sym: "H", name: "Hydrogen", cat: "reactive-nonmetal" },
+      { num: 2, sym: "He", name: "Helium", cat: "noble-gas" },
+      { num: 3, sym: "Li", name: "Lithium", cat: "alkali-metal" },
+      { num: 4, sym: "Be", name: "Beryllium", cat: "alkaline-earth-metal" },
+      { num: 5, sym: "B", name: "Boron", cat: "metalloid" },
+      { num: 6, sym: "C", name: "Carbon", cat: "reactive-nonmetal" },
+      { num: 7, sym: "N", name: "Nitrogen", cat: "reactive-nonmetal" },
+      { num: 8, sym: "O", name: "Oxygen", cat: "reactive-nonmetal" },
+      { num: 9, sym: "F", name: "Fluorine", cat: "reactive-nonmetal" },
+      { num: 10, sym: "Ne", name: "Neon", cat: "noble-gas" },
+      { num: 11, sym: "Na", name: "Sodium", cat: "alkali-metal" },
+      { num: 12, sym: "Mg", name: "Magnesium", cat: "alkaline-earth-metal" },
+      { num: 13, sym: "Al", name: "Aluminum", cat: "post-transition-metal" },
+      { num: 14, sym: "Si", name: "Silicon", cat: "metalloid" },
+      { num: 15, sym: "P", name: "Phosphorus", cat: "reactive-nonmetal" },
+      { num: 16, sym: "S", name: "Sulfur", cat: "reactive-nonmetal" },
+      { num: 17, sym: "Cl", name: "Chlorine", cat: "reactive-nonmetal" },
+      { num: 18, sym: "Ar", name: "Argon", cat: "noble-gas" },
+      { num: 19, sym: "K", name: "Potassium", cat: "alkali-metal" },
+      { num: 20, sym: "Ca", name: "Calcium", cat: "alkaline-earth-metal" },
+      { num: 21, sym: "Sc", name: "Scandium", cat: "transition-metal" },
+      { num: 22, sym: "Ti", name: "Titanium", cat: "transition-metal" },
+      { num: 23, sym: "V", name: "Vanadium", cat: "transition-metal" },
+      { num: 24, sym: "Cr", name: "Chromium", cat: "transition-metal" },
+      { num: 25, sym: "Mn", name: "Manganese", cat: "transition-metal" },
+      { num: 26, sym: "Fe", name: "Iron", cat: "transition-metal" },
+      { num: 27, sym: "Co", name: "Cobalt", cat: "transition-metal" },
+      { num: 28, sym: "Ni", name: "Nickel", cat: "transition-metal" },
+      { num: 29, sym: "Cu", name: "Copper", cat: "transition-metal" },
+      { num: 30, sym: "Zn", name: "Zinc", cat: "transition-metal" },
+      { num: 31, sym: "Ga", name: "Gallium", cat: "post-transition-metal" },
+      { num: 32, sym: "Ge", name: "Germanium", cat: "metalloid" },
+      { num: 33, sym: "As", name: "Arsenic", cat: "metalloid" },
+      { num: 34, sym: "Se", name: "Selenium", cat: "reactive-nonmetal" },
+      { num: 35, sym: "Br", name: "Bromine", cat: "reactive-nonmetal" },
+      { num: 36, sym: "Kr", name: "Krypton", cat: "noble-gas" },
+      { num: 37, sym: "Rb", name: "Rubidium", cat: "alkali-metal" },
+      { num: 38, sym: "Sr", name: "Strontium", cat: "alkaline-earth-metal" },
+      { num: 39, sym: "Y", name: "Yttrium", cat: "transition-metal" },
+      { num: 40, sym: "Zr", name: "Zirconium", cat: "transition-metal" },
+      { num: 41, sym: "Nb", name: "Niobium", cat: "transition-metal" },
+      { num: 42, sym: "Mo", name: "Molybdenum", cat: "transition-metal" },
+      { num: 43, sym: "Tc", name: "Technetium", cat: "transition-metal" },
+      { num: 44, sym: "Ru", name: "Ruthenium", cat: "transition-metal" },
+      { num: 45, sym: "Rh", name: "Rhodium", cat: "transition-metal" },
+      { num: 46, sym: "Pd", name: "Palladium", cat: "transition-metal" },
+      { num: 47, sym: "Ag", name: "Silver", cat: "transition-metal" },
+      { num: 48, sym: "Cd", name: "Cadmium", cat: "transition-metal" },
+      { num: 49, sym: "In", name: "Indium", cat: "post-transition-metal" },
+      { num: 50, sym: "Sn", name: "Tin", cat: "post-transition-metal" },
+      { num: 51, sym: "Sb", name: "Antimony", cat: "metalloid" },
+      { num: 52, sym: "Te", name: "Tellurium", cat: "metalloid" },
+      { num: 53, sym: "I", name: "Iodine", cat: "reactive-nonmetal" },
+      { num: 54, sym: "Xe", name: "Xenon", cat: "noble-gas" },
+      { num: 55, sym: "Cs", name: "Cesium", cat: "alkali-metal" },
+      { num: 56, sym: "Ba", name: "Barium", cat: "alkaline-earth-metal" },
+      { num: 57, sym: "La", name: "Lanthanum", cat: "lanthanide" },
+      { num: 58, sym: "Ce", name: "Cerium", cat: "lanthanide" },
+      { num: 59, sym: "Pr", name: "Praseodymium", cat: "lanthanide" },
+      { num: 60, sym: "Nd", name: "Neodymium", cat: "lanthanide" },
+      { num: 61, sym: "Pm", name: "Promethium", cat: "lanthanide" },
+      { num: 62, sym: "Sm", name: "Samarium", cat: "lanthanide" },
+      { num: 63, sym: "Eu", name: "Europium", cat: "lanthanide" },
+      { num: 64, sym: "Gd", name: "Gadolinium", cat: "lanthanide" },
+      { num: 65, sym: "Tb", name: "Terbium", cat: "lanthanide" },
+      { num: 66, sym: "Dy", name: "Dysprosium", cat: "lanthanide" },
+      { num: 67, sym: "Ho", name: "Holmium", cat: "lanthanide" },
+      { num: 68, sym: "Er", name: "Erbium", cat: "lanthanide" },
+      { num: 69, sym: "Tm", name: "Thulium", cat: "lanthanide" },
+      { num: 70, sym: "Yb", name: "Ytterbium", cat: "lanthanide" },
+      { num: 71, sym: "Lu", name: "Lutetium", cat: "lanthanide" },
+      { num: 72, sym: "Hf", name: "Hafnium", cat: "transition-metal" },
+      { num: 73, sym: "Ta", name: "Tantalum", cat: "transition-metal" },
+      { num: 74, sym: "W", name: "Tungsten", cat: "transition-metal" },
+      { num: 75, sym: "Re", name: "Rhenium", cat: "transition-metal" },
+      { num: 76, sym: "Os", name: "Osmium", cat: "transition-metal" },
+      { num: 77, sym: "Ir", name: "Iridium", cat: "transition-metal" },
+      { num: 78, sym: "Pt", name: "Platinum", cat: "transition-metal" },
+      { num: 79, sym: "Au", name: "Gold", cat: "transition-metal" },
+      { num: 80, sym: "Hg", name: "Mercury", cat: "transition-metal" },
+      { num: 81, sym: "Tl", name: "Thallium", cat: "post-transition-metal" },
+      { num: 82, sym: "Pb", name: "Lead", cat: "post-transition-metal" },
+      { num: 83, sym: "Bi", name: "Bismuth", cat: "post-transition-metal" },
+      { num: 84, sym: "Po", name: "Polonium", cat: "post-transition-metal" },
+      { num: 85, sym: "At", name: "Astatine", cat: "metalloid" },
+      { num: 86, sym: "Rn", name: "Radon", cat: "noble-gas" },
+      { num: 87, sym: "Fr", name: "Francium", cat: "alkali-metal" },
+      { num: 88, sym: "Ra", name: "Radium", cat: "alkaline-earth-metal" },
+      { num: 89, sym: "Ac", name: "Actinium", cat: "actinide" },
+      { num: 90, sym: "Th", name: "Thorium", cat: "actinide" },
+      { num: 91, sym: "Pa", name: "Protactinium", cat: "actinide" },
+      { num: 92, sym: "U", name: "Uranium", cat: "actinide" },
+      { num: 93, sym: "Np", name: "Neptunium", cat: "actinide" },
+      { num: 94, sym: "Pu", name: "Plutonium", cat: "actinide" },
+      { num: 95, sym: "Am", name: "Americium", cat: "actinide" },
+      { num: 96, sym: "Cm", name: "Curium", cat: "actinide" },
+      { num: 97, sym: "Bk", name: "Berkelium", cat: "actinide" },
+      { num: 98, sym: "Cf", name: "Californium", cat: "actinide" },
+      { num: 99, sym: "Es", name: "Einsteinium", cat: "actinide" },
+      { num: 100, sym: "Fm", name: "Fermium", cat: "actinide" },
+      { num: 101, sym: "Md", name: "Mendelevium", cat: "actinide" },
+      { num: 102, sym: "No", name: "Nobelium", cat: "actinide" },
+      { num: 103, sym: "Lr", name: "Lawrencium", cat: "actinide" },
+      { num: 104, sym: "Rf", name: "Rutherfordium", cat: "transition-metal" },
+      { num: 105, sym: "Db", name: "Dubnium", cat: "transition-metal" },
+      { num: 106, sym: "Sg", name: "Seaborgium", cat: "transition-metal" },
+      { num: 107, sym: "Bh", name: "Bohrium", cat: "transition-metal" },
+      { num: 108, sym: "Hs", name: "Hassium", cat: "transition-metal" },
+      { num: 109, sym: "Mt", name: "Meitnerium", cat: "unknown" },
+      { num: 110, sym: "Ds", name: "Darmstadtium", cat: "unknown" },
+      { num: 111, sym: "Rg", name: "Roentgenium", cat: "unknown" },
+      { num: 112, sym: "Cn", name: "Copernicium", cat: "transition-metal" },
+      { num: 113, sym: "Nh", name: "Nihonium", cat: "unknown" },
+      { num: 114, sym: "Fl", name: "Flerovium", cat: "unknown" },
+      { num: 115, sym: "Mc", name: "Moscovium", cat: "unknown" },
+      { num: 116, sym: "Lv", name: "Livermorium", cat: "unknown" },
+      { num: 117, sym: "Ts", name: "Tennessine", cat: "unknown" },
+      { num: 118, sym: "Og", name: "Oganesson", cat: "unknown" }
+    ];
+
+    // Helper formatting functions
+    function formatItem(el, preset, customPattern) {
+      switch (preset) {
+        case '1':
+          return `${el.num}. ${el.name} (${el.sym})`;
+        case '2':
+          return `${el.num} - ${el.sym} - ${el.name}`;
+        case '3':
+          return `**${el.sym}** - ${el.name} (Atomic #${el.num})`;
+        case '4':
+          return `${el.sym} (#${el.num}) - ${el.name}`;
+        case 'custom':
+          return customPattern
+            .replace(/{num}/g, el.num)
+            .replace(/{sym}/g, el.sym)
+            .replace(/{name}/g, el.name)
+            .replace(/{category}/g, el.cat);
+        default:
+          return `${el.num}. ${el.name} (${el.sym})`;
+      }
+    }
+
+    function updateFormat() {
+      const selectedPreset = document.querySelector('input[name="formatPreset"]:checked').value;
+      const customContainer = document.getElementById('customFormatContainer');
+      
+      if (selectedPreset === 'custom') {
+        customContainer.classList.remove('hidden');
+      } else {
+        customContainer.classList.add('hidden');
+      }
+      
+      generateList();
+    }
+
+    function generateList() {
+      const selectedPreset = document.querySelector('input[name="formatPreset"]:checked').value;
+      const customPattern = document.getElementById('customPattern').value || '{num}. {name} ({sym})';
+      const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
+      const catVal = document.getElementById('categoryFilter').value;
+
+      const filtered = elements.filter(el => {
+        const matchesSearch = 
+          el.name.toLowerCase().includes(searchVal) ||
+          el.sym.toLowerCase().includes(searchVal) ||
+          el.num.toString() === searchVal;
+
+        const matchesCat = (catVal === 'all') || (el.cat === catVal);
+
+        return matchesSearch && matchesCat;
+      });
+
+      const formattedLines = filtered.map(el => formatItem(el, selectedPreset, customPattern));
+      
+      const outputTextarea = document.getElementById('listOutput');
+      outputTextarea.value = formattedLines.join('\n');
+
+      // Update counters
+      document.getElementById('showingCount').textContent = `Showing ${filtered.length} of ${elements.length} elements`;
+      document.getElementById('elementCountBadge').textContent = `${filtered.length} elements`;
+    }
+
+    function copyList() {
+      const textarea = document.getElementById('listOutput');
+      if (!textarea.value) return;
+
+      // Select text
+      textarea.select();
+      textarea.setSelectionRange(0, 99999); // Mobile support
+
+      let successful = false;
+      
+      // Fallback method using execCommand
+      try {
+        successful = document.execCommand('copy');
+      } catch (err) {
+        successful = false;
+      }
+
+      // Modern API fallback if available
+      if (!successful && navigator.clipboard) {
+        navigator.clipboard.writeText(textarea.value)
+          .then(() => showToast())
+          .catch(() => alert('Copying failed. Please manually select all text in the preview box and press Ctrl+C / Cmd+C.'));
+      } else if (successful) {
+        showToast();
+      }
+    }
+
+    function showToast() {
+      const toast = document.getElementById('toast');
+      const copyBtnText = document.getElementById('copyBtnText');
+      const copyTopBtnText = document.getElementById('copyTopBtnText');
+
+      // Button state changes
+      if (copyBtnText) copyBtnText.textContent = "Copied!";
+      if (copyTopBtnText) copyTopBtnText.textContent = "Copied!";
+
+      // Show Toast
+      toast.classList.remove('translate-y-20', 'opacity-0');
+
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+        if (copyBtnText) copyBtnText.textContent = "Copy to Clipboard";
+        if (copyTopBtnText) copyTopBtnText.textContent = "Copy List to Clipboard";
+      }, 3000);
+    }
+
+    // Initialize list on load
+    window.onload = function() {
+      generateList();
+    };
+  </script>
+</body>
+</html>
